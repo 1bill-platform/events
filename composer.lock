@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "71d66a6d9bbba0f41ceff3c03e531ac8",
+    "content-hash": "df219c1dd552ddf9d2dc702e09ffc006",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -283,16 +283,16 @@
         },
         {
             "name": "oneframework/container",
-            "version": "v0.0.2",
+            "version": "v0.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/1bill-platform/container.git",
-                "reference": "1669492327a50361ca02b08b7ad9a075d799d8f5"
+                "reference": "3e0dd87fc59be124547ba3129021fe19b889232f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/1bill-platform/container/zipball/1669492327a50361ca02b08b7ad9a075d799d8f5",
-                "reference": "1669492327a50361ca02b08b7ad9a075d799d8f5",
+                "url": "https://api.github.com/repos/1bill-platform/container/zipball/3e0dd87fc59be124547ba3129021fe19b889232f",
+                "reference": "3e0dd87fc59be124547ba3129021fe19b889232f",
                 "shasum": ""
             },
             "require": {
@@ -316,7 +316,7 @@
                 }
             ],
             "description": "A Simple IoC Container, based off of the one included with Laravel; featuring a few customizations.",
-            "time": "2019-02-07T15:07:42+00:00"
+            "time": "2019-02-09T23:52:44+00:00"
         },
         {
             "name": "psr/container",
@@ -484,70 +484,6 @@
             "time": "2018-12-05T08:06:11+00:00"
         },
         {
-            "name": "symfony/event-dispatcher",
-            "version": "4.2.x-dev",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "bd09ad265cd50b2b9d09d65ce6aba2d29bc81fe1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/bd09ad265cd50b2b9d09d65ce6aba2d29bc81fe1",
-                "reference": "bd09ad265cd50b2b9d09d65ce6aba2d29bc81fe1",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^7.1.3",
-                "symfony/contracts": "^1.0"
-            },
-            "conflict": {
-                "symfony/dependency-injection": "<3.4"
-            },
-            "require-dev": {
-                "psr/log": "~1.0",
-                "symfony/config": "~3.4|~4.0",
-                "symfony/dependency-injection": "~3.4|~4.0",
-                "symfony/expression-language": "~3.4|~4.0",
-                "symfony/stopwatch": "~3.4|~4.0"
-            },
-            "suggest": {
-                "symfony/dependency-injection": "",
-                "symfony/http-kernel": ""
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "4.2-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\EventDispatcher\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Symfony EventDispatcher Component",
-            "homepage": "https://symfony.com",
-            "time": "2019-01-16T20:35:37+00:00"
-        },
-        {
             "name": "symfony/polyfill-mbstring",
             "version": "dev-master",
             "source": {
@@ -612,12 +548,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/translation.git",
-                "reference": "9c3548bf55c71d70b569c4055c7c3bb91b897a18"
+                "reference": "1155caa45b23f89f140a14af08e934a71a60f7e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation/zipball/9c3548bf55c71d70b569c4055c7c3bb91b897a18",
-                "reference": "9c3548bf55c71d70b569c4055c7c3bb91b897a18",
+                "url": "https://api.github.com/repos/symfony/translation/zipball/1155caa45b23f89f140a14af08e934a71a60f7e8",
+                "reference": "1155caa45b23f89f140a14af08e934a71a60f7e8",
                 "shasum": ""
             },
             "require": {
@@ -677,7 +613,7 @@
             ],
             "description": "Symfony Translation Component",
             "homepage": "https://symfony.com",
-            "time": "2019-01-29T09:50:57+00:00"
+            "time": "2019-02-07T18:43:24+00:00"
         }
     ],
     "packages-dev": [],

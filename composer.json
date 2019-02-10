@@ -12,16 +12,12 @@
 	"require": {
 		"php": ">=7.1",
 		"oneframework/container": "~v0.0",
-		"symfony/event-dispatcher": "4.2.*",
 		"illuminate/support": "~5.7"
 	},
 	"autoload": {
 		"psr-4": {
 			"OneFramework\\Events\\": "src/"
-		},
-		"files": [
-			"resources/bootstrap.php"
-		]
+		}
 	},
 	"config": {
 		"bin-dir": "bin/",

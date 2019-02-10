@@ -20,11 +20,9 @@
  */
 
 use Illuminate\Support\Str;
-use OneFramework\Container\Container;
 use OneFramework\Container\ContainerAwareInterface;
-use OneFramework\Container\ContainerAwareTrait;
-use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\EventDispatcher\EventDispatcher;
+use OneFramework\Container\Traits\ContainerAwareTrait;
+use OneFramework\Events\Contracts\DispatcherContract;
 
 /**
  * Class Definition: Dispatcher
@@ -39,7 +37,7 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  * @author      Alexander Schmautz <ceo@elixant.ca>
  * @copyright   Copyright (c) 2018 Elixant Technoloy Ltd. All Rights Reserved.
  */
-class Dispatcher extends EventDispatcher implements DispatcherInterface, ContainerAwareInterface
+class Dispatcher implements DispatcherContract, ContainerAwareInterface
 {
     use ContainerAwareTrait;
     
@@ -65,25 +63,23 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     protected $wildcardsCache = [];
     
     /**
-     * Dispatcher constructor.
+     * The queue resolver instance.
      *
-     * @param Container|null $container
+     * @var callable
      */
-    public function __construct(Container $container = null)
-    {
-        $this->setContainer($container ?? $this->getContainer());
-    }
+    protected $queueResolver;
     
     /**
      * Register an event listener with the dispatcher.
      *
-     * @param  string|array  $events
-     * @param  mixed  $listener
+     * @param  string|array $events
+     * @param  mixed        $listener
+     *
      * @return void
      */
     public function listen($events, $listener): void
     {
-        foreach ((array) $events as $event) {
+        foreach ((array)$events as $event) {
             if (Str::contains($event, '*')) {
                 $this->setupWildcardListen($event, $listener);
             } else {
@@ -95,8 +91,9 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     /**
      * Setup a wildcard listener callback.
      *
-     * @param  string  $event
+     * @param  string $event
      * @param  mixed  $listener
+     *
      * @return void
      */
     protected function setupWildcardListen($event, $listener): void
@@ -109,24 +106,26 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     /**
      * Determine if a given event has listeners.
      *
-     * @param  string  $eventName
+     * @param  string $eventName
+     *
      * @return bool
      */
-    public function hasListeners($eventName = null): bool
+    public function hasListeners($eventName): bool
     {
-        return ! empty($this->listeners) && (isset($this->listeners[$eventName]) || isset($this->wildcards[$eventName]));
+        return isset($this->listeners[$eventName]) || isset($this->wildcards[$eventName]);
     }
     
     /**
      * Register an event and payload to be fired later.
      *
-     * @param  string  $event
+     * @param  string $event
      * @param  array  $payload
+     *
      * @return void
      */
     public function push($event, $payload = []): void
     {
-        $this->listen($event.'_pushed', function () use ($event, $payload) {
+        $this->listen($event . '_pushed', function () use ($event, $payload) {
             $this->dispatch($event, $payload);
         });
     }
@@ -134,18 +133,20 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     /**
      * Flush a set of pushed events.
      *
-     * @param  string  $event
+     * @param  string $event
+     *
      * @return void
      */
     public function flush($event): void
     {
-        $this->dispatch($event.'_pushed');
+        $this->dispatch($event . '_pushed');
     }
     
     /**
      * Register an event subscriber with the dispatcher.
      *
      * @param  object|string $subscriber
+     *
      * @return void
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
@@ -160,13 +161,14 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
      * Resolve the subscriber instance.
      *
      * @param  object|string $subscriber
+     *
      * @return mixed
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function resolveSubscriber($subscriber)
     {
         if (is_string($subscriber)) {
-            return $this->container->make($subscriber);
+            return $this->container()->make($subscriber);
         }
         
         return $subscriber;
@@ -175,8 +177,9 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     /**
      * Fire an event until the first non-null response is returned.
      *
-     * @param  string|object  $event
-     * @param  mixed  $payload
+     * @param  string|object $event
+     * @param  mixed         $payload
+     *
      * @return array|null
      */
     public function until($event, $payload = []): ?array
@@ -187,9 +190,10 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     /**
      * Fire an event and call the listeners.
      *
-     * @param  string|object  $event
-     * @param  mixed  $payload
-     * @param  bool  $halt
+     * @param  string|object $event
+     * @param  mixed         $payload
+     * @param  bool          $halt
+     *
      * @return array|null
      */
     public function fire($event, $payload = [], $halt = false): ?array
@@ -200,12 +204,13 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     /**
      * Fire an event and call the listeners.
      *
-     * @param  string|object  $event
-     * @param  mixed  $payload
-     * @param  bool  $halt
+     * @param  string|object $event
+     * @param  mixed         $payload
+     * @param  bool          $halt
+     *
      * @return array|null
      */
-    public function dispatch($event, Event $payload = null, $halt = false): ?array
+    public function dispatch($event, $payload = [], $halt = false): ?array
     {
         // When the given "event" is actually an object we will assume it is an event
         // object and use the class as the event name and this event itself as the
@@ -242,8 +247,9 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     /**
      * Parse the given event and payload and prepare them for dispatching.
      *
-     * @param  mixed  $event
-     * @param  mixed  $payload
+     * @param  mixed $event
+     * @param  mixed $payload
+     *
      * @return array
      */
     protected function parseEventAndPayload($event, $payload): array
@@ -258,10 +264,11 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     /**
      * Get all of the listeners for a given event name.
      *
-     * @param  string  $eventName
+     * @param  string $eventName
+     *
      * @return array
      */
-    public function getListeners($eventName = null): array
+    public function getListeners($eventName): array
     {
         $listeners = $this->listeners[$eventName] ?? [];
         
@@ -278,7 +285,8 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     /**
      * Get the wildcard listeners for the event.
      *
-     * @param  string  $eventName
+     * @param  string $eventName
+     *
      * @return array
      */
     protected function getWildcardListeners($eventName): array
@@ -287,7 +295,7 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
         
         foreach ($this->wildcards as $key => $listeners) {
             if (Str::is($key, $eventName)) {
-                if (! empty($listeners)) {
+                if (!empty($listeners)) {
                     $wildcards = array_merge($wildcards, $listeners);
                 }
             }
@@ -299,8 +307,9 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     /**
      * Add the listeners for the event's interfaces to the given array.
      *
-     * @param  string  $eventName
+     * @param  string $eventName
      * @param  array  $listeners
+     *
      * @return array
      */
     protected function addInterfaceListeners($eventName, array $listeners = []): array
@@ -308,7 +317,7 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
         foreach (class_implements($eventName) as $interface) {
             if (isset($this->listeners[$interface])) {
                 foreach ($this->listeners[$interface] as $names) {
-                    $listeners = array_merge($listeners, (array) $names);
+                    $listeners = array_merge($listeners, (array)$names);
                 }
             }
         }
@@ -319,8 +328,9 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     /**
      * Register an event listener with the dispatcher.
      *
-     * @param  \Closure|string  $listener
-     * @param  bool  $wildcard
+     * @param  \Closure|string $listener
+     * @param  bool            $wildcard
+     *
      * @return \Closure
      */
     public function makeListener($listener, $wildcard = false): callable
@@ -341,8 +351,9 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     /**
      * Create a class based listener using the IoC container.
      *
-     * @param  string  $listener
-     * @param  bool  $wildcard
+     * @param  string $listener
+     * @param  bool   $wildcard
+     *
      * @return \Closure
      */
     public function createClassListener($listener, $wildcard = false): callable
@@ -362,6 +373,7 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
      * Create the class based event callable.
      *
      * @param  string $listener
+     *
      * @return callable
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
@@ -369,13 +381,14 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     {
         [$class, $method] = $this->parseClassCallable($listener);
         
-        return [$this->container->make($class), $method];
+        return [$this->container()->make($class), $method];
     }
     
     /**
      * Parse the class listener into class and method.
      *
-     * @param  string  $listener
+     * @param  string $listener
+     *
      * @return array
      */
     protected function parseClassCallable($listener): array
@@ -386,7 +399,8 @@ class Dispatcher extends EventDispatcher implements DispatcherInterface, Contain
     /**
      * Remove a set of listeners from the dispatcher.
      *
-     * @param  string  $event
+     * @param  string $event
+     *
      * @return void
      */
     public function forget($event): void

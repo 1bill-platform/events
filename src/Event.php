@@ -1,5 +1,4 @@
-<?php
-namespace OneFramework\Events;
+<?php namespace OneFramework\Events;
 
 /**
  * OneFramework
@@ -20,28 +19,41 @@ namespace OneFramework\Events;
  * @copyright Copyright (c) 2018 Elixant Technoloy Ltd. All Rights Reserved.
  */
 
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use OneFramework\Container\ContainerAwareInterface;
+use OneFramework\Container\Traits\ContainerAwareTrait;
 
 /**
- * Interface Definition: DispatcherInterface
+ * Class Definition: Event
  *
  * ${CARET}
  *
  * @package     oneframework/events
- * @subpackage  DispatcherInterface
+ * @subpackage  Event
  * @license     MIT License
  * @link        https://www.elixant.ca
  * @author      Alexander Schmautz <ceo@elixant.ca>
  * @copyright   Copyright (c) 2018 Elixant Technoloy Ltd. All Rights Reserved.
  */
-interface DispatcherInterface extends EventDispatcherInterface
+abstract class Event implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+    
     /**
-     * Register an event listener with the dispatcher.
+     * Registers the event listeners using the given dispatcher instance.
      *
-     * @param  string|array  $events
-     * @param  mixed  $listener
+     * @param  Dispatcher  $dispatcher
      * @return void
      */
-    public function listen($events, $listener);
+    abstract public function subscribe(Dispatcher $dispatcher);
+    
+    /**
+     * Dynamically retrieve objects from the container.
+     *
+     * @param  string  $key
+     * @return mixed
+     */
+    public function __get($key)
+    {
+        return $this->container($key);
+    }
 }
