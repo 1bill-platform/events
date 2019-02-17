@@ -11,7 +11,7 @@
 	],
 	"require": {
 		"php": ">=7.1",
-		"oneframework/container": "~v0.0",
+		"oneframework/container": "~v1.0",
 		"illuminate/support": "~5.7"
 	},
 	"autoload": {
